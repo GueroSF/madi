@@ -1,0 +1,40 @@
+###############################################################################
+#                          Generated on phpdocker.io                          #
+###############################################################################
+version: "3.1"
+services:
+
+    mariadb:
+      image: mariadb:10.4
+      container_name: madi-mariadb
+      working_dir: /application
+      volumes:
+        - ./../:/application
+      environment:
+        - MYSQL_ROOT_PASSWORD=madi_root_pass
+        - MYSQL_DATABASE=madi_db
+        - MYSQL_USER=madi_user
+        - MYSQL_PASSWORD=madi_pass
+      ports:
+        - "9728:3306"
+
+    webserver:
+      image: nginx:alpine
+      container_name: madi-webserver
+      working_dir: /application
+      volumes:
+          - ./../:/application
+          - ./phpdocker/nginx/nginx.conf:/etc/nginx/conf.d/default.conf
+      ports:
+       - "9725:80"
+
+    php-fpm:
+      build: phpdocker/php-fpm
+      container_name: madi-php-fpm
+      working_dir: /application
+      environment:
+        PHP_IDE_CONFIG: "serverName=madi-debug"
+      volumes:
+        - ./../:/application
+        - ./phpdocker/php-fpm/php-ini-overrides.ini:/etc/php/7.3/fpm/conf.d/99-overrides.ini
+
