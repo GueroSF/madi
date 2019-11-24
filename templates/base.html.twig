@@ -92,6 +92,11 @@
 
                         {% block main %}{% endblock %}
                     </div>
+
+                    <div id="sidebar" class="col-sm-3">
+                        {% block sidebar %}
+                        {% endblock %}
+                    </div>
                 </div>
             {% endblock %}
         </div>
@@ -101,21 +106,7 @@
                 <div class="container">
                     <div class="row">
                         <div id="footer-copyright" class="col-md-6">
-                            <p>&copy; {{ 'now'|date('Y') }} - The Symfony Project</p>
-                            <p>{{ 'mit_license'|trans }}</p>
-                        </div>
-                        <div id="footer-resources" class="col-md-6">
-                            <p>
-                                <a href="https://twitter.com/symfony" title="Symfony Twitter">
-                                    <i class="fa fa-twitter" aria-hidden="true"></i>
-                                </a>
-                                <a href="https://www.facebook.com/SensioLabs" title="SensioLabs Facebook">
-                                    <i class="fa fa-facebook" aria-hidden="true"></i>
-                                </a>
-                                <a href="https://symfony.com/blog/" title="Symfony Blog">
-                                    <i class="fa fa-rss" aria-hidden="true"></i>
-                                </a>
-                            </p>
+                            <p>&copy; {{ 'now'|date('Y') }}</p>
                         </div>
                     </div>
                 </div>
@@ -125,10 +116,5 @@
         {% block javascripts %}
             {{ encore_entry_script_tags('app') }}
         {% endblock %}
-
-        {# it's not mandatory to set the timezone in localizeddate(). This is done to
-           avoid errors when the 'intl' PHP extension is not available and the application
-           is forced to use the limited "intl polyfill", which only supports UTC and GMT #}
-        <!-- Page rendered on {{ 'now'|localizeddate('long', 'long', null, 'UTC') }} -->
     </body>
 </html>

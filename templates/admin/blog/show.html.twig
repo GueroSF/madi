@@ -15,8 +15,6 @@
     </div>
 
     {{ post.content|md2html }}
-
-    {{ include('blog/_post_tags.html.twig') }}
 {% endblock %}
 
 {% block sidebar %}
@@ -31,6 +29,4 @@
     </div>
 
     {{ parent() }}
-
-    {{ show_source_code(_self) }}
 {% endblock %}
