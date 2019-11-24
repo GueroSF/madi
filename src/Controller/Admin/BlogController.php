@@ -12,10 +12,12 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Post;
+use App\Entity\UserPost;
 use App\Form\PostType;
 use App\Repository\PostRepository;
 use App\Security\PostVoter;
 use App\Utils\Slugger;
+use Doctrine\Common\Collections\ArrayCollection;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\Form\Extension\Core\Type\SubmitType;
@@ -89,6 +91,18 @@ class BlogController extends AbstractController
             $post->setSlug(Slugger::slugify($post->getTitle()));
 
             $em = $this->getDoctrine()->getManager();
+
+            /** @var ArrayCollection $elements */
+            $elements = $form->get('users')->getNormData();
+
+            foreach ($elements->getValues() as $userId) {
+                $relation = new UserPost();
+                $relation->addUserId($userId);
+                $relation->addPostId($post);
+
+                $em->persist($relation);
+            }
+
             $em->persist($post);
             $em->flush();
 

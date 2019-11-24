@@ -12,8 +12,13 @@
 namespace App\Form;
 
 use App\Entity\Post;
+use App\Entity\User;
 use App\Form\Type\DateTimePickerType;
+use App\Repository\UserRepository;
+use Symfony\Bridge\Doctrine\Form\Type\EntityType;
 use Symfony\Component\Form\AbstractType;
+use Symfony\Component\Form\Extension\Core\Type\ChoiceType;
+use Symfony\Component\Form\Extension\Core\Type\CollectionType;
 use Symfony\Component\Form\Extension\Core\Type\TextareaType;
 use Symfony\Component\Form\FormBuilderInterface;
 use Symfony\Component\OptionsResolver\OptionsResolver;
@@ -43,23 +48,33 @@ class PostType extends AbstractType
 
         $builder
             ->add('title', null, [
-                'attr' => ['autofocus' => true],
+                'attr'  => ['autofocus' => true],
                 'label' => 'label.title',
             ])
             ->add('summary', TextareaType::class, [
-                'help' => 'help.post_summary',
+                'help'  => 'help.post_summary',
                 'label' => 'label.summary',
             ])
             ->add('content', null, [
-                'attr' => ['rows' => 20],
-                'help' => 'help.post_content',
+                'attr'  => ['rows' => 20],
+                'help'  => 'help.post_content',
                 'label' => 'label.content',
             ])
             ->add('publishedAt', DateTimePickerType::class, [
                 'label' => 'label.published_at',
-                'help' => 'help.post_publication',
+                'help'  => 'help.post_publication',
             ])
-        ;
+            ->add('users', EntityType::class, [
+                'required'      => true,
+                'class'         => User::class,
+                'mapped'        => false,
+                'multiple'      => true,
+                'query_builder' => function (UserRepository $repo) {
+                    return $repo->createQueryBuilder('u');
+                },
+                'choice_label' => 'username',
+                'choice_value' => 'id'
+            ]);
     }
 
     /**

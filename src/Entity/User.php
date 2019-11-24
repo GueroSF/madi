@@ -11,22 +11,15 @@
 
 namespace App\Entity;
 
+use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\UserRepository")
- * @ORM\Table(name="symfony_demo_user")
- *
- * Defines the properties of the User entity to represent the application users.
- * See https://symfony.com/doc/current/book/doctrine.html#creating-an-entity-class
- *
- * Tip: if you have an existing database, you can generate these entity class automatically.
- * See https://symfony.com/doc/current/cookbook/doctrine/reverse_engineering.html
- *
- * @author Ryan Weaver <weaverryan@gmail.com>
- * @author Javier Eguiluz <javier.eguiluz@gmail.com>
+ * @ORM\Table(name="user")
  */
 class User implements UserInterface, \Serializable
 {
@@ -77,6 +70,18 @@ class User implements UserInterface, \Serializable
      * @ORM\Column(type="json")
      */
     private $roles = [];
+
+    /**
+     * @ORM\OneToMany(targetEntity="App\Entity\Post")
+     * @ORM\JoinTable(name="user_post",
+     *     joinColumns={@JoinColumn(name))
+     */
+    private $userPosts;
+
+    public function __construct()
+    {
+        $this->userPosts = new ArrayCollection();
+    }
 
     public function getId(): ?int
     {
@@ -184,5 +189,33 @@ class User implements UserInterface, \Serializable
     {
         // add $this->salt too if you don't use Bcrypt or Argon2i
         [$this->id, $this->username, $this->password] = unserialize($serialized, ['allowed_classes' => false]);
+    }
+
+    /**
+     * @return Collection|UserPost[]
+     */
+    public function getUserPosts(): Collection
+    {
+        return $this->userPosts;
+    }
+
+    public function addUserPost(UserPost $userPost): self
+    {
+        if (!$this->userPosts->contains($userPost)) {
+            $this->userPosts[] = $userPost;
+            $userPost->addUserId($this);
+        }
+
+        return $this;
+    }
+
+    public function removeUserPost(UserPost $userPost): self
+    {
+        if ($this->userPosts->contains($userPost)) {
+            $this->userPosts->removeElement($userPost);
+            $userPost->removeUserId($this);
+        }
+
+        return $this;
     }
 }

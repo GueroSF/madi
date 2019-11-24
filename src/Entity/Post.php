@@ -18,18 +18,7 @@ use Symfony\Component\Validator\Constraints as Assert;
 
 /**
  * @ORM\Entity(repositoryClass="App\Repository\PostRepository")
- * @ORM\Table(name="symfony_demo_post")
- *
- * Defines the properties of the Post entity to represent the blog posts.
- *
- * See https://symfony.com/doc/current/book/doctrine.html#creating-an-entity-class
- *
- * Tip: if you have an existing database, you can generate these entity class automatically.
- * See https://symfony.com/doc/current/cookbook/doctrine/reverse_engineering.html
- *
- * @author Ryan Weaver <weaverryan@gmail.com>
- * @author Javier Eguiluz <javier.eguiluz@gmail.com>
- * @author Yonel Ceruto <yonelceruto@gmail.com>
+ * @ORM\Table(name="post")
  */
 class Post
 {
@@ -98,24 +87,30 @@ class Post
      */
     private $author;
 
+//    /**
+//     * @var Comment[]|ArrayCollection
+//     *
+//     * @ORM\OneToMany(
+//     *      targetEntity="Comment",
+//     *      mappedBy="post",
+//     *      orphanRemoval=true,
+//     *      cascade={"persist"}
+//     * )
+//     * @ORM\OrderBy({"publishedAt": "DESC"})
+//     */
+//    private $comments;
+
     /**
-     * @var Comment[]|ArrayCollection
-     *
-     * @ORM\OneToMany(
-     *      targetEntity="Comment",
-     *      mappedBy="post",
-     *      orphanRemoval=true,
-     *      cascade={"persist"}
-     * )
-     * @ORM\OrderBy({"publishedAt": "DESC"})
+     * @ORM\ManyToMany(targetEntity="App\Entity\UserPost", mappedBy="postId")
      */
-    private $comments;
+    private $userPosts;
 
     public function __construct()
     {
         $this->publishedAt = new \DateTime();
         $this->comments = new ArrayCollection();
         $this->tags = new ArrayCollection();
+        $this->userPosts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -171,24 +166,6 @@ class Post
     public function setAuthor(User $author): void
     {
         $this->author = $author;
-    }
-
-    public function getComments(): Collection
-    {
-        return $this->comments;
-    }
-
-    public function addComment(Comment $comment): void
-    {
-        $comment->setPost($this);
-        if (!$this->comments->contains($comment)) {
-            $this->comments->add($comment);
-        }
-    }
-
-    public function removeComment(Comment $comment): void
-    {
-        $this->comments->removeElement($comment);
     }
 
     public function getSummary(): ?string
