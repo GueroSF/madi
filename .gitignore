@@ -1,3 +1,6 @@
+/.idea
+/public/build
+
 /public/build/fonts/glyphicons-*
 /public/build/images/glyphicons-*
 
