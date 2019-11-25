@@ -12,7 +12,7 @@
 namespace App\Controller\Admin;
 
 use App\Entity\Post;
-use App\Entity\UserPost;
+use App\Entity\PostInfo;
 use App\Form\PostType;
 use App\Repository\PostRepository;
 use App\Security\PostVoter;
@@ -95,14 +95,14 @@ class BlogController extends AbstractController
             /** @var ArrayCollection $elements */
             $elements = $form->get('users')->getNormData();
 
-            foreach ($elements->getValues() as $userId) {
-                $relation = new UserPost();
-                $relation->addUserId($userId);
-                $relation->addPostId($post);
+            $relation = new PostInfo();
+            $relation->addPost($post);
 
-                $em->persist($relation);
+            foreach ($elements->getValues() as $user) {
+                $relation->addUser($user);
             }
 
+            $em->persist($relation);
             $em->persist($post);
             $em->flush();
 

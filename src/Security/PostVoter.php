@@ -12,6 +12,7 @@
 namespace App\Security;
 
 use App\Entity\Post;
+use App\Entity\PostInfo;
 use App\Entity\User;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
@@ -56,6 +57,11 @@ class PostVoter extends Voter
         // the logic of this voter is pretty simple: if the logged user is the
         // author of the given blog post, grant permission; otherwise, deny it.
         // (the supports() method guarantees that $post is a Post object)
-        return $user === $post->getAuthor();
+
+        /** @var Post $post */
+//        return $user === $post->getAuthor();
+        return $user->getPostInfos()->filter(function (PostInfo $postInfo) use ($post) {
+            return $postInfo->getPost() === $post;
+        })->count() > 0;
     }
 }

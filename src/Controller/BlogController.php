@@ -11,10 +11,8 @@
 
 namespace App\Controller;
 
-use App\Entity\Comment;
 use App\Entity\Post;
 use App\Events\CommentCreatedEvent;
-use App\Form\CommentType;
 use App\Repository\PostRepository;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
@@ -24,6 +22,7 @@ use Symfony\Component\EventDispatcher\EventDispatcherInterface;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use Symfony\Component\Security\Core\Security;
 
 /**
  * Controller used to manage blog contents in the public part of the site.
@@ -45,9 +44,11 @@ class BlogController extends AbstractController
      * Content-Type header for the response.
      * See https://symfony.com/doc/current/quick_tour/the_controller.html#using-formats
      */
-    public function index(int $page, PostRepository $posts): Response
+    public function index(int $page, PostRepository $posts, Security $security): Response
     {
-        $latestPosts = $posts->findLatest($page);
+        $latestPosts = $security->isGranted('ROLE_ADMIN')
+            ? $posts->findLatest($page)
+            : $posts->findLatestForUser($this->getUser(), $page);
 
         // Every template name also has two extensions that specify the format and
         // engine for that template.
@@ -59,6 +60,7 @@ class BlogController extends AbstractController
 
     /**
      * @Route("/posts/{slug}", methods={"GET"}, name="blog_post")
+     * @IsGranted("show", subject="post", message="Posts can only be shown to attach user.")
      *
      * NOTE: The $post controller argument is automatically injected by Symfony
      * after performing a database query looking for a Post with the 'slug'
@@ -115,22 +117,22 @@ class BlogController extends AbstractController
 //        ]);
 //    }
 
-    /**
-     * This controller is called directly via the render() function in the
-     * blog/post_show.html.twig template. That's why it's not needed to define
-     * a route name for it.
-     *
-     * The "id" of the Post is passed in and then turned into a Post object
-     * automatically by the ParamConverter.
-     */
-    public function commentForm(Post $post): Response
-    {
-        $form = $this->createForm(CommentType::class);
-
-        return $this->render('blog/_comment_form.html.twig', [
-            'post' => $post,
-            'form' => $form->createView(),
-        ]);
-    }
+//    /**
+//     * This controller is called directly via the render() function in the
+//     * blog/post_show.html.twig template. That's why it's not needed to define
+//     * a route name for it.
+//     *
+//     * The "id" of the Post is passed in and then turned into a Post object
+//     * automatically by the ParamConverter.
+//     */
+//    public function commentForm(Post $post): Response
+//    {
+//        $form = $this->createForm(CommentType::class);
+//
+//        return $this->render('blog/_comment_form.html.twig', [
+//            'post' => $post,
+//            'form' => $form->createView(),
+//        ]);
+//    }
 
 }

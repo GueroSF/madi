@@ -11,32 +11,4 @@
     </p>
 
     {{ post.content|md2html }}
-
-    <div id="post-add-comment" class="well">
-        {{ render(controller('App\\Controller\\BlogController::commentForm', {'id': post.id})) }}
-    </div>
-
-    <h3>
-        <i class="fa fa-comments" aria-hidden="true"></i> {{ 'post.num_comments'|trans({ 'count': post.comments|length }) }}
-    </h3>
-
-    {% for comment in post.comments %}
-        <div class="row post-comment">
-            <a name="comment_{{ comment.id }}"></a>
-            <h4 class="col-sm-3">
-                <strong>{{ comment.author.fullName }}</strong> {{ 'post.commented_on'|trans }}
-                {# it's not mandatory to set the timezone in localizeddate(). This is done to
-                   avoid errors when the 'intl' PHP extension is not available and the application
-                   is forced to use the limited "intl polyfill", which only supports UTC and GMT #}
-                <strong>{{ comment.publishedAt|localizeddate('medium', 'short', null, 'UTC') }}</strong>
-            </h4>
-            <div class="col-sm-9">
-                {{ comment.content|md2html }}
-            </div>
-        </div>
-    {% else %}
-        <div class="post-comment">
-            <p>{{ 'post.no_comments'|trans }}</p>
-        </div>
-    {% endfor %}
 {% endblock %}

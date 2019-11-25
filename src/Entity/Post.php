@@ -12,6 +12,7 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -86,12 +87,18 @@ class Post
      */
     private $author;
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\PostInfo", mappedBy="post")
+     */
+    private $postInfos;
+
     public function __construct()
     {
         $this->publishedAt = new \DateTime();
         $this->comments = new ArrayCollection();
         $this->tags = new ArrayCollection();
         $this->userPosts = new ArrayCollection();
+        $this->postInfos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -157,5 +164,33 @@ class Post
     public function setSummary(string $summary): void
     {
         $this->summary = $summary;
+    }
+
+    /**
+     * @return Collection|PostInfo[]
+     */
+    public function getPostInfos(): Collection
+    {
+        return $this->postInfos;
+    }
+
+    public function addPostInfo(PostInfo $postInfo): self
+    {
+        if (!$this->postInfos->contains($postInfo)) {
+            $this->postInfos[] = $postInfo;
+            $postInfo->addPost($this);
+        }
+
+        return $this;
+    }
+
+    public function removePostInfo(PostInfo $postInfo): self
+    {
+        if ($this->postInfos->contains($postInfo)) {
+            $this->postInfos->removeElement($postInfo);
+            $postInfo->removePost($this);
+        }
+
+        return $this;
     }
 }

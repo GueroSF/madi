@@ -12,6 +12,7 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
+use Doctrine\Common\Collections\Collection;
 use Symfony\Component\Security\Core\User\UserInterface;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
@@ -70,8 +71,14 @@ class User implements UserInterface, \Serializable
      */
     private $roles = [];
 
+    /**
+     * @ORM\ManyToMany(targetEntity="App\Entity\PostInfo", mappedBy="user")
+     */
+    private $postInfos;
+
     public function __construct()
     {
+        $this->postInfos = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -180,5 +187,33 @@ class User implements UserInterface, \Serializable
     {
         // add $this->salt too if you don't use Bcrypt or Argon2i
         [$this->id, $this->username, $this->password] = unserialize($serialized, ['allowed_classes' => false]);
+    }
+
+    /**
+     * @return Collection|PostInfo[]
+     */
+    public function getPostInfos(): Collection
+    {
+        return $this->postInfos;
+    }
+
+    public function addPostInfo(PostInfo $postInfo): self
+    {
+        if (!$this->postInfos->contains($postInfo)) {
+            $this->postInfos[] = $postInfo;
+            $postInfo->addUser($this);
+        }
+
+        return $this;
+    }
+
+    public function removePostInfo(PostInfo $postInfo): self
+    {
+        if ($this->postInfos->contains($postInfo)) {
+            $this->postInfos->removeElement($postInfo);
+            $postInfo->removeUser($this);
+        }
+
+        return $this;
     }
 }
