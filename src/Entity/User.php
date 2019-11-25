@@ -12,9 +12,8 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
-use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Security\Core\User\UserInterface;
+use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
 /**
@@ -71,16 +70,8 @@ class User implements UserInterface, \Serializable
      */
     private $roles = [];
 
-    /**
-     * @ORM\OneToMany(targetEntity="App\Entity\Post")
-     * @ORM\JoinTable(name="user_post",
-     *     joinColumns={@JoinColumn(name))
-     */
-    private $userPosts;
-
     public function __construct()
     {
-        $this->userPosts = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -189,33 +180,5 @@ class User implements UserInterface, \Serializable
     {
         // add $this->salt too if you don't use Bcrypt or Argon2i
         [$this->id, $this->username, $this->password] = unserialize($serialized, ['allowed_classes' => false]);
-    }
-
-    /**
-     * @return Collection|UserPost[]
-     */
-    public function getUserPosts(): Collection
-    {
-        return $this->userPosts;
-    }
-
-    public function addUserPost(UserPost $userPost): self
-    {
-        if (!$this->userPosts->contains($userPost)) {
-            $this->userPosts[] = $userPost;
-            $userPost->addUserId($this);
-        }
-
-        return $this;
-    }
-
-    public function removeUserPost(UserPost $userPost): self
-    {
-        if ($this->userPosts->contains($userPost)) {
-            $this->userPosts->removeElement($userPost);
-            $userPost->removeUserId($this);
-        }
-
-        return $this;
     }
 }

@@ -12,7 +12,6 @@
 namespace App\Entity;
 
 use Doctrine\Common\Collections\ArrayCollection;
-use Doctrine\Common\Collections\Collection;
 use Doctrine\ORM\Mapping as ORM;
 use Symfony\Component\Validator\Constraints as Assert;
 
@@ -86,24 +85,6 @@ class Post
      * @ORM\JoinColumn(nullable=false)
      */
     private $author;
-
-//    /**
-//     * @var Comment[]|ArrayCollection
-//     *
-//     * @ORM\OneToMany(
-//     *      targetEntity="Comment",
-//     *      mappedBy="post",
-//     *      orphanRemoval=true,
-//     *      cascade={"persist"}
-//     * )
-//     * @ORM\OrderBy({"publishedAt": "DESC"})
-//     */
-//    private $comments;
-
-    /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\UserPost", mappedBy="postId")
-     */
-    private $userPosts;
 
     public function __construct()
     {
