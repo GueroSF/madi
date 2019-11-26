@@ -9,7 +9,8 @@ RUN apt-get update \
     && apt-get -y --no-install-recommends install php7.3-mysql php7.3-sqlite php-xdebug \
     && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
 
-# Install git
 RUN apt-get update \
     && apt-get -y install git fish \
+    && curl -sL https://deb.nodesource.com/setup_12.x | bash - && apt-get install -y nodejs \
     && apt-get clean; rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* /usr/share/doc/*
+
