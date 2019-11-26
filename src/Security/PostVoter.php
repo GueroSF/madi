@@ -40,6 +40,7 @@ class PostVoter extends Voter
     public const DELETE = 'delete';
     public const EDIT = 'edit';
     public const SHOW = 'show';
+    public const SIGN = 'sign';
 
     public function __construct(ManagerRegistry $managerRegistry)
     {
@@ -52,7 +53,7 @@ class PostVoter extends Voter
     protected function supports($attribute, $subject): bool
     {
         // this voter is only executed for three specific permissions on Post objects
-        return $subject instanceof Post && \in_array($attribute, [self::SHOW, self::EDIT, self::DELETE], true);
+        return $subject instanceof Post && \in_array($attribute, [self::SHOW, self::EDIT, self::DELETE, self::SIGN], true);
     }
 
     /**

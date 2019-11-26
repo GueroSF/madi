@@ -83,6 +83,10 @@ class PostInfo
         return $this->post;
     }
 
+    public function isReader(): bool
+    {
+        return $this->getReaderAt() !== null;
+    }
 
     public function getReaderAt(): ?\DateTimeInterface
     {
@@ -94,6 +98,11 @@ class PostInfo
         $this->readerAt = $readerAt;
 
         return $this;
+    }
+
+    public function isSign(): bool
+    {
+        return $this->getSignAt() !== null;
     }
 
     public function getSignAt(): ?\DateTimeInterface
