@@ -12,15 +12,13 @@
 namespace App\Controller;
 
 use App\Entity\Post;
-use App\Entity\PostInfo;
-use App\Repository\PostInfoRepository;
 use App\Repository\PostRepository;
 use App\Security\PostVoter;
-use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\IsGranted;
 use Symfony\Bundle\FrameworkBundle\Controller\AbstractController;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+use App\Utils\ShowPost;
 
 /**
  * Controller used to manage blog contents in the public part of the site.
@@ -63,16 +61,7 @@ class BlogController extends AbstractController
             throw $this->createAccessDeniedException('Posts can only be shown to attach user.');
         }
 
-        /** @var PostInfoRepository $repo */
-        $repo = $this->getDoctrine()->getRepository(PostInfo::class);
-
-        $info = $repo->findByUserAndPost($this->getUser(), $post);
-        if ($info->getReaderAt() === null) {
-            $info->setReaderAt(new \DateTime());
-        }
-
-        $this->getDoctrine()->getManager()->persist($info);
-        $this->getDoctrine()->getManager()->flush();
+        $this->get(ShowPost::class)->markAsRead($this->getUser(), $post);
 
         return $this->render('blog/post_show.html.twig', ['post' => $post]);
     }
