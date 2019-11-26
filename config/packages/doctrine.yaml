@@ -6,7 +6,7 @@ parameters:
 
 doctrine:
     dbal:
-        driver: 'pdo_sqlite'
+        driver: 'pdo_mysql'
         server_version: 'mariadb-10.4.10'
         charset: utf8mb4
 
