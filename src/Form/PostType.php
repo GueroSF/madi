@@ -70,7 +70,10 @@ class PostType extends AbstractType
                 'mapped'        => false,
                 'multiple'      => true,
                 'query_builder' => function (UserRepository $repo) {
-                    return $repo->createQueryBuilder('u');
+                    //TODO this is kludge
+                    return $repo->createQueryBuilder('u')
+                        ->andWhere('u.roles != :role')
+                        ->setParameter(':role', json_encode(['ROLE_ADMIN']));
                 },
                 'choice_label' => 'username',
                 'choice_value' => 'id'

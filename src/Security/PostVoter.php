@@ -59,9 +59,8 @@ class PostVoter extends Voter
         // (the supports() method guarantees that $post is a Post object)
 
         /** @var Post $post */
-//        return $user === $post->getAuthor();
         return $user->getPostInfos()->filter(function (PostInfo $postInfo) use ($post) {
-            return $postInfo->getPost() === $post;
+            return $postInfo->getPost()->contains($post);
         })->count() > 0;
     }
 }

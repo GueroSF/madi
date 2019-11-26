@@ -1,14 +1,5 @@
 <?php
 
-/*
- * This file is part of the Symfony package.
- *
- * (c) Fabien Potencier <fabien@symfony.com>
- *
- * For the full copyright and license information, please view the LICENSE
- * file that was distributed with this source code.
- */
-
 namespace App\Repository;
 
 use App\Entity\Post;
@@ -18,6 +9,7 @@ use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Doctrine\Common\Persistence\ManagerRegistry;
 use Doctrine\ORM\Query\Expr\Join;
 use Doctrine\ORM\QueryBuilder;
+use Symfony\Component\Security\Core\Security;
 
 /**
  * This custom Doctrine repository contains some methods which are useful when
@@ -31,18 +23,33 @@ use Doctrine\ORM\QueryBuilder;
  */
 class PostRepository extends ServiceEntityRepository
 {
-    public function __construct(ManagerRegistry $registry)
+    /**
+     * @var Security
+     */
+    private $security;
+
+    public function __construct(ManagerRegistry $registry, Security $security)
     {
+        $this->security = $security;
         parent::__construct($registry, Post::class);
     }
 
     public function findLatestForUser(User $user, int $page = 1): Paginator
     {
         $qb = $this->queryBuilderFindLatest($page);
-        $qb
-            ->innerJoin('p.postInfos', 'pip')
-            ->innerJoin('pip.user', 'u', Join::WITH, 'u.id = :userId')
-            ->setParameter(':userId', $user->getId());
+        if (!$this->security->isGranted('ROLE_ADMIN')) {
+            $qb
+                ->innerJoin('p.postInfos', 'pip')
+                ->innerJoin('pip.user', 'u', Join::WITH, 'u.id = :userId')
+                ->setParameter(':userId', $user->getId());
+        }
+
+        return (new Paginator($qb))->paginate($page);
+    }
+
+    public function findLatest(int $page = 1): Paginator
+    {
+        $qb = $this->queryBuilderFindLatest($page);
 
         return (new Paginator($qb))->paginate($page);
     }
@@ -55,53 +62,5 @@ class PostRepository extends ServiceEntityRepository
             ->where('p.publishedAt <= :now')
             ->orderBy('p.publishedAt', 'DESC')
             ->setParameter('now', new \DateTime());
-    }
-
-    public function findLatest(int $page = 1): Paginator
-    {
-        $qb = $this->queryBuilderFindLatest($page);
-
-        return (new Paginator($qb))->paginate($page);
-    }
-
-    /**
-     * @return Post[]
-     */
-    public function findBySearchQuery(string $query, int $limit = Post::NUM_ITEMS): array
-    {
-        $searchTerms = $this->extractSearchTerms($query);
-
-        if (0 === \count($searchTerms)) {
-            return [];
-        }
-
-        $queryBuilder = $this->createQueryBuilder('p');
-
-        foreach ($searchTerms as $key => $term) {
-            $queryBuilder
-                ->orWhere('p.title LIKE :t_'.$key)
-                ->setParameter('t_'.$key, '%'.$term.'%')
-            ;
-        }
-
-        return $queryBuilder
-            ->orderBy('p.publishedAt', 'DESC')
-            ->setMaxResults($limit)
-            ->getQuery()
-            ->getResult();
-    }
-
-    /**
-     * Transforms the search string into an array of search terms.
-     */
-    private function extractSearchTerms(string $searchQuery): array
-    {
-        $searchQuery = trim(preg_replace('/[[:space:]]+/', ' ', $searchQuery));
-        $terms = array_unique(explode(' ', $searchQuery));
-
-        // ignore the search terms that are too short
-        return array_filter($terms, function ($term) {
-            return 2 <= mb_strlen($term);
-        });
     }
 }
