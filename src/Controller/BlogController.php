@@ -12,6 +12,8 @@
 namespace App\Controller;
 
 use App\Entity\Post;
+use App\Entity\PostInfo;
+use App\Repository\PostInfoRepository;
 use App\Repository\PostRepository;
 use App\Security\PostVoter;
 use Sensio\Bundle\FrameworkExtraBundle\Configuration\Cache;
@@ -61,6 +63,16 @@ class BlogController extends AbstractController
             throw $this->createAccessDeniedException('Posts can only be shown to attach user.');
         }
 
+        /** @var PostInfoRepository $repo */
+        $repo = $this->getDoctrine()->getRepository(PostInfo::class);
+
+        $info = $repo->findByUserAndPost($this->getUser(), $post);
+        if ($info->getReaderAt() === null) {
+            $info->setReaderAt(new \DateTime());
+        }
+
+        $this->getDoctrine()->getManager()->persist($info);
+        $this->getDoctrine()->getManager()->flush();
 
         return $this->render('blog/post_show.html.twig', ['post' => $post]);
     }

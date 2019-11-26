@@ -19,12 +19,12 @@ class PostInfo
     private $id;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\User", inversedBy="postInfos")
+     * @ORM\ManyToOne(targetEntity="App\Entity\User", inversedBy="postInfos")
      */
     private $user;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\Post", inversedBy="postInfos")
+     * @ORM\ManyToOne(targetEntity="App\Entity\Post", inversedBy="postInfos")
      */
     private $post;
 
@@ -40,8 +40,6 @@ class PostInfo
 
     public function __construct()
     {
-        $this->user = new ArrayCollection();
-        $this->post = new ArrayCollection();
     }
 
     public function getId(): ?int
@@ -50,56 +48,41 @@ class PostInfo
     }
 
     /**
-     * @return Collection|User[]
+     * @return User
      */
-    public function getUser(): Collection
+    public function getUser(): ?User
     {
         return $this->user;
     }
 
-    public function addUser(User $user): self
+    /**
+     * @param mixed $user
+     */
+    public function setUser(?User $user): self
     {
-        if (!$this->user->contains($user)) {
-            $this->user[] = $user;
-        }
-
-        return $this;
-    }
-
-    public function removeUser(User $user): self
-    {
-        if ($this->user->contains($user)) {
-            $this->user->removeElement($user);
-        }
+        $this->user = $user;
 
         return $this;
     }
 
     /**
-     * @return Collection|Post[]
+     * @param mixed $post
      */
-    public function getPost(): Collection
+    public function setPost(?Post $post): self
+    {
+        $this->post = $post;
+
+        return $this;
+    }
+
+    /**
+     * @return Post
+     */
+    public function getPost(): ?Post
     {
         return $this->post;
     }
 
-    public function addPost(Post $post): self
-    {
-        if (!$this->post->contains($post)) {
-            $this->post[] = $post;
-        }
-
-        return $this;
-    }
-
-    public function removePost(Post $post): self
-    {
-        if ($this->post->contains($post)) {
-            $this->post->removeElement($post);
-        }
-
-        return $this;
-    }
 
     public function getReaderAt(): ?\DateTimeInterface
     {

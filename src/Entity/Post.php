@@ -88,7 +88,7 @@ class Post
     private $author;
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\PostInfo", mappedBy="post")
+     * @ORM\OneToMany(targetEntity="App\Entity\PostInfo", mappedBy="post")
      */
     private $postInfos;
 

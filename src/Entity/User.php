@@ -72,7 +72,7 @@ class User implements UserInterface, \Serializable
     private $roles = [];
 
     /**
-     * @ORM\ManyToMany(targetEntity="App\Entity\PostInfo", mappedBy="user")
+     * @ORM\OneToMany(targetEntity="App\Entity\PostInfo", mappedBy="user")
      */
     private $postInfos;
 

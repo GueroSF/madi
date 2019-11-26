@@ -94,15 +94,16 @@ class BlogController extends AbstractController
 
             /** @var ArrayCollection $elements */
             $elements = $form->get('users')->getNormData();
-
-            $relation = new PostInfo();
-            $relation->addPost($post);
-
+            
             foreach ($elements->getValues() as $user) {
-                $relation->addUser($user);
+                $relation = new PostInfo();
+                $relation
+                    ->setPost($post)
+                    ->setUser($user);
+
+                $em->persist($relation);
             }
 
-            $em->persist($relation);
             $em->persist($post);
             $em->flush();
 

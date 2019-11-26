@@ -14,6 +14,8 @@ namespace App\Security;
 use App\Entity\Post;
 use App\Entity\PostInfo;
 use App\Entity\User;
+use App\Repository\PostInfoRepository;
+use Doctrine\Common\Persistence\ManagerRegistry;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\Voter;
 
@@ -27,11 +29,22 @@ use Symfony\Component\Security\Core\Authorization\Voter\Voter;
  */
 class PostVoter extends Voter
 {
+
+    /**
+     * @var ManagerRegistry
+     */
+    private $managerRegistry;
+
     // Defining these constants is overkill for this simple application, but for real
     // applications, it's a recommended practice to avoid relying on "magic strings"
     public const DELETE = 'delete';
     public const EDIT = 'edit';
     public const SHOW = 'show';
+
+    public function __construct(ManagerRegistry $managerRegistry)
+    {
+        $this->managerRegistry = $managerRegistry;
+    }
 
     /**
      * {@inheritdoc}
@@ -58,9 +71,10 @@ class PostVoter extends Voter
         // author of the given blog post, grant permission; otherwise, deny it.
         // (the supports() method guarantees that $post is a Post object)
 
+        /** @var PostInfoRepository $repo */
+        $repo = $this->managerRegistry->getRepository(PostInfo::class);
+
         /** @var Post $post */
-        return $user->getPostInfos()->filter(function (PostInfo $postInfo) use ($post) {
-            return $postInfo->getPost()->contains($post);
-        })->count() > 0;
+        return $repo->findByUserAndPost($user, $post) !== null;
     }
 }

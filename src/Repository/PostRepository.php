@@ -39,8 +39,8 @@ class PostRepository extends ServiceEntityRepository
         $qb = $this->queryBuilderFindLatest($page);
         if (!$this->security->isGranted('ROLE_ADMIN')) {
             $qb
-                ->innerJoin('p.postInfos', 'pip')
-                ->innerJoin('pip.user', 'u', Join::WITH, 'u.id = :userId')
+                ->innerJoin('p.postInfos', 'pip', Join::WITH, 'pip.user = :userId')
+//                ->innerJoin('pip.user', 'u', Join::WITH, 'u.id = :userId')
                 ->setParameter(':userId', $user->getId());
         }
 

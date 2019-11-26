@@ -2,7 +2,9 @@
 
 namespace App\Repository;
 
+use App\Entity\Post;
 use App\Entity\PostInfo;
+use App\Entity\User;
 use Doctrine\Bundle\DoctrineBundle\Repository\ServiceEntityRepository;
 use Symfony\Bridge\Doctrine\RegistryInterface;
 
@@ -17,6 +19,19 @@ class PostInfoRepository extends ServiceEntityRepository
     public function __construct(RegistryInterface $registry)
     {
         parent::__construct($registry, PostInfo::class);
+    }
+
+    public function findByUserAndPost(User $user, Post $post): ?PostInfo
+    {
+        return $this->createQueryBuilder('i')
+            ->andWhere('i.user = :userId')
+            ->andWhere('i.post = :postId')
+            ->setParameters([
+                ':userId' => $user->getId(),
+                ':postId' => $post->getId()
+            ])
+            ->getQuery()
+            ->getOneOrNullResult();
     }
 
     // /**
