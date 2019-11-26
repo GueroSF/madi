@@ -23,7 +23,6 @@ Encore
     .addEntry('app', './assets/js/app.js')
     .addEntry('login', './assets/js/login.js')
     .addEntry('admin', './assets/js/admin.js')
-    .addEntry('search', './assets/js/search.js')
     .splitEntryChunks()
     .enableSingleRuntimeChunk()
     .enableIntegrityHashes(Encore.isProduction())
