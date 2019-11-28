@@ -128,10 +128,6 @@ class BlogController extends AbstractController
      */
     public function show(Post $post): Response
     {
-        // This security check can also be performed
-        // using an annotation: @IsGranted("show", subject="post", message="Posts can only be shown to their authors.")
-        $this->denyAccessUnlessGranted(PostVoter::SHOW, $post, 'Posts can only be shown to their authors.');
-
         return $this->render('admin/blog/show.html.twig', [
             'post' => $post,
         ]);
@@ -141,7 +137,6 @@ class BlogController extends AbstractController
      * Displays a form to edit an existing Post entity.
      *
      * @Route("/{id<\d+>}/edit",methods={"GET", "POST"}, name="admin_post_edit")
-     * @IsGranted("edit", subject="post", message="Posts can only be edited by their authors.")
      */
     public function edit(Request $request, Post $post): Response
     {
@@ -166,7 +161,6 @@ class BlogController extends AbstractController
      * Deletes a Post entity.
      *
      * @Route("/{id}/delete", methods={"POST"}, name="admin_post_delete")
-     * @IsGranted("delete", subject="post")
      */
     public function delete(Request $request, Post $post): Response
     {
@@ -175,6 +169,11 @@ class BlogController extends AbstractController
         }
 
         $em = $this->getDoctrine()->getManager();
+
+        foreach ($post->getPostInfos()->getValues() as $info) {
+            $em->remove($info);
+        }
+
         $em->remove($post);
         $em->flush();
 

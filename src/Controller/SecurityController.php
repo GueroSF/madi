@@ -35,7 +35,6 @@ class SecurityController extends AbstractController
      */
     public function login(Request $request, Security $security, AuthenticationUtils $helper): Response
     {
-        // if user is already logged in, don't display the login page again
         if ($security->isGranted('ROLE_USER')) {
             return $this->redirectToRoute('blog_index');
         }
