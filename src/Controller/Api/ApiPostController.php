@@ -46,6 +46,7 @@ class ApiPostController extends AbstractController
             $result[] = [
                 'id'       => $post->getId(),
                 'title'    => $post->getTitle(),
+                'summary'  => $post->getSummary(),
                 'content'  => $post->getContent(),
                 'isSign'   => $postInfo->isSign(),
                 'isReader' => $postInfo->isReader(),

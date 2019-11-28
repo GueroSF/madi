@@ -14,12 +14,11 @@
 {% endblock %}
 
 {% block sidebar %}
-    {{ dump(isSign) }}
 <form action="{{ url('blog_post_sign', {id: post.id}) }}" method="post">
     <input type="hidden" name="token" value="{{ csrf_token('sign') }}" />
     <button type="submit" class="btn btn-lg btn-block btn-success"{{ isSign ? ' disabled' : '' }}>
-        <i class="fa fa-trash" aria-hidden="true"></i>
-        {{ 'action.sign_post'|trans }}
+        <i class="fa fa-angellist" aria-hidden="true"></i>
+        Подписать
     </button>
 </form>
 {% endblock %}
