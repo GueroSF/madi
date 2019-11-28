@@ -40,7 +40,6 @@ class PostRepository extends ServiceEntityRepository
         if (!$this->security->isGranted('ROLE_ADMIN')) {
             $qb
                 ->innerJoin('p.postInfos', 'pip', Join::WITH, 'pip.user = :userId')
-//                ->innerJoin('pip.user', 'u', Join::WITH, 'u.id = :userId')
                 ->setParameter(':userId', $user->getId());
         }
 
@@ -59,8 +58,8 @@ class PostRepository extends ServiceEntityRepository
         return $this->createQueryBuilder('p')
             ->addSelect('a')
             ->innerJoin('p.author', 'a')
-            ->where('p.publishedAt <= :now')
-            ->orderBy('p.publishedAt', 'DESC')
+            ->where('p.createdAt <= :now')
+            ->orderBy('p.createdAt', 'DESC')
             ->setParameter('now', new \DateTime());
     }
 }

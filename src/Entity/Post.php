@@ -51,13 +51,6 @@ class Post
      * @var string
      *
      * @ORM\Column(type="string")
-     */
-    private $slug;
-
-    /**
-     * @var string
-     *
-     * @ORM\Column(type="string")
      * @Assert\NotBlank(message="post.blank_summary")
      * @Assert\Length(max=255)
      */
@@ -77,7 +70,7 @@ class Post
      *
      * @ORM\Column(type="datetime")
      */
-    private $publishedAt;
+    private $createdAt;
 
     /**
      * @var User
@@ -94,7 +87,7 @@ class Post
 
     public function __construct()
     {
-        $this->publishedAt = new \DateTime();
+        $this->createdAt = new \DateTime();
         $this->comments = new ArrayCollection();
         $this->tags = new ArrayCollection();
         $this->userPosts = new ArrayCollection();
@@ -116,16 +109,6 @@ class Post
         $this->title = $title;
     }
 
-    public function getSlug(): ?string
-    {
-        return $this->slug;
-    }
-
-    public function setSlug(string $slug): void
-    {
-        $this->slug = $slug;
-    }
-
     public function getContent(): ?string
     {
         return $this->content;
@@ -136,14 +119,9 @@ class Post
         $this->content = $content;
     }
 
-    public function getPublishedAt(): \DateTime
+    public function getCreatedAt(): \DateTime
     {
-        return $this->publishedAt;
-    }
-
-    public function setPublishedAt(\DateTime $publishedAt): void
-    {
-        $this->publishedAt = $publishedAt;
+        return $this->createdAt;
     }
 
     public function getAuthor(): ?User

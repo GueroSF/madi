@@ -60,10 +60,6 @@ class PostType extends AbstractType
                 'help'  => 'help.post_content',
                 'label' => 'label.content',
             ])
-            ->add('publishedAt', DateTimePickerType::class, [
-                'label' => 'label.published_at',
-                'help'  => 'help.post_publication',
-            ])
             ->add('users', EntityType::class, [
                 'required'      => true,
                 'class'         => User::class,

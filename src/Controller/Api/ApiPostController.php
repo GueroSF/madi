@@ -37,11 +37,29 @@ class ApiPostController extends AbstractController
     {
         $latestPosts = $posts->findLatestForUser($this->getUser(), $page);
 
-        return new JsonResponse($latestPosts->getResults());
+        $result = [];
+
+        /** @var Post $post */
+        foreach ($latestPosts->getResults() as $post) {
+            $postInfo = $this->postService->findPostInfo($this->getUser(), $post);
+
+            $result[] = [
+                'id'       => $post->getId(),
+                'title'    => $post->getTitle(),
+                'content'  => $post->getContent(),
+                'isSign'   => $postInfo->isSign(),
+                'isReader' => $postInfo->isReader(),
+            ];
+        }
+
+        return new JsonResponse([
+            'list'  => $result,
+            'count' => count($result),
+        ]);
     }
 
     /**
-     * @Route("/posts/{slug}", methods={"GET"}, name="api_blog_post")
+     * @Route("/posts/{id}", methods={"GET"}, name="api_blog_post")
      */
     public function postShow(Post $post): Response
     {
@@ -55,20 +73,16 @@ class ApiPostController extends AbstractController
         return new JsonResponse([
             'title'   => $post->getTitle(),
             'content' => $post->getContent(),
-            'isSign'  => $this->postService->isSign()
+            'isSign'  => $this->postService->isSign(),
         ]);
     }
 
     /**
-     * @Route("/{id}/sign", methods={"POST"}, name="api_blog_post_sign")
+     * @Route("/post/{id}/sign", methods={"POST"}, name="api_blog_post_sign")
      * @IsGranted("sign", subject="post")
      */
-    public function sign(Request $request, Post $post): Response
+    public function sign(Post $post): Response
     {
-        if (!$this->isCsrfTokenValid('sign', $request->request->get('token'))) {
-            return $this->json('false', 403);
-        }
-
         $this->postService->findPostInfo($this->getUser(), $post);
         $this->postService->markAsSigh();
 
