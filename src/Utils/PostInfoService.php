@@ -17,26 +17,26 @@ class PostInfoService
     private $managerRegistry;
 
     /**
-     * @var PostInfo
+     * @var PostInfo | null
      */
-    private $info;
+    private $info = null;
 
     public function __construct(ManagerRegistry $managerRegistry)
     {
         $this->managerRegistry = $managerRegistry;
     }
 
-    public function getInfo(): PostInfo
+    public function getInfo(): ?PostInfo
     {
         return $this->info;
     }
 
     public function isSign(): bool
     {
-        return $this->getInfo()->isSign();
+        return $this->getInfo() === null ? true : $this->getInfo()->isSign();
     }
 
-    public function findPostInfo(User $user, Post $post): PostInfo
+    public function findPostInfo(User $user, Post $post): ?PostInfo
     {
         /** @var PostInfoRepository $repo */
         $repo = $this->managerRegistry->getRepository(PostInfo::class);

@@ -69,12 +69,17 @@ class BlogController extends AbstractController
      */
     public function postShow(Post $post): Response
     {
-        if (!$this->isGranted('ROLE_ADMIN') && !$this->isGranted(PostVoter::SHOW, $post)) {
+        $isAdmin = $this->isGranted('ROLE_ADMIN');
+
+        if (!$isAdmin && !$this->isGranted(PostVoter::SHOW, $post)) {
             throw $this->createAccessDeniedException('Posts can only be shown to attach user.');
         }
 
         $this->postService->findPostInfo($this->getUser(), $post);
-        $this->postService->markAsRead();
+
+        if (!$isAdmin) {
+            $this->postService->markAsRead();
+        }
 
         return $this->render('blog/post_show.html.twig', [
             'post'   => $post,
